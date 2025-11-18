@@ -4,18 +4,69 @@ author: "Kyla & Erika & Cheyna"
 format: pdf
 editor: visual
 ---
+
+# Load Packages
+
 ```{r}
-#Library Packages
 library(here)
 library(janitor)
 library(rio)
+library(tidyverse)
 ```
 
-```{r}
 # Import Data
-fruit_data <- import(here("data", "Fruit-Prices-2022.csv")) %>%  
-  clean_names()
+```{r}
+# Fruit data
+fruit_files <- list.files(pattern = ".xlsx", path = "../data/fruit-2020", full.names = TRUE)
 
-veggie_data <- import(here("data", "Vegetable-Prices-2022.csv")) %>%  
-  clean_names()
+fruit_2020 <- do.call(rbind, lapply
+        (fruit_files, import, as.is=T, header = FALSE))
+
+# Vegetable Data
+vegetable_files <- list.files(pattern = ".xlsx", path = "../data/vegetables-2020", full.names = TRUE)
+
+vegetable_2020 <- do.call(rbind, lapply
+        (vegetable_files, import, as.is=T, header = FALSE))
+```
+# Removing rows without data 
+```{r}
+# Fruit cleaning
+fruit_2020 <- fruit_2020 %>% # rename cols to be more descriptive
+  rename(fruit = ...1, retail_price = ...2, retail_price_unit = ...3, yeild = ...4, cup_eq_size = ...5, cup_eq_unit = ...6,cup_eq_price = ...7)
+
+fruit_2020_clean <- fruit_2020 %>% # remove rows without data (these were just the citation of where the data came from)
+  filter(!substr(fruit, 1, 1) == "1") %>% 
+  filter(!substr(fruit, 1, 1) == "2") %>% 
+  filter(!substr(fruit, 1, 1) == "3") %>% 
+  filter(!substr(fruit, 1, 1) == "4") %>% 
+  filter(!substr(fruit, 1, 6) == "Source")
+
+# Veggie cleaning
+vegetable_2020 <- vegetable_2020 %>% # rename cols to be more descriptive
+  rename(fruit = ...1, retail_price = ...2, retail_price_unit = ...3, yeild = ...4, cup_eq_size = ...5, cup_eq_unit = ...6,cup_eq_price = ...7)
+
+vegetable_2020_clean <- vegetable_2020 %>% # remove rows without data (these were just the citation of where the data came from)
+  filter(!substr(fruit, 1, 1) == "1") %>% 
+  filter(!substr(fruit, 1, 1) == "2") %>% 
+  filter(!substr(fruit, 1, 1) == "3") %>% 
+  filter(!substr(fruit, 1, 1) == "4") %>% 
+  filter(!substr(fruit, 1, 6) == "Source")
+```
+
+# How does the price of fruits and vegetables vary based on form? (Kyla)
+
+```{r}
+
+```
+
+# Do fruit and vegetable prices vary by family (berries, stone fruit etc)? (Erika)
+
+```{r}
+
+```
+
+# What is the relationship between retail price and yield by form? (Cheyna)
+
+```{r}
+
 ```
