@@ -1,7 +1,9 @@
 ---
 title: "EDLD651_final_project"
 author: "Kyla & Erika & Cheyna"
-format: pdf
+format: 
+  pdf:
+    code-overflow: wrap
 editor: visual
 ---
 
@@ -12,6 +14,9 @@ editor: visual
 >>>>>>> Stashed changes
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: hide
 library(here)
 library(janitor)
 library(rio)
@@ -25,6 +30,9 @@ library(dplyr)
 
 <<<<<<< Updated upstream
 ```{r}
+#| message: false
+#| warning: false
+#| results: hide
 # Fruit data
 
 fruit_files <- list.files(pattern = ".xlsx", path = "../data/fruit-2020", full.names = TRUE)
@@ -42,42 +50,58 @@ veg_2020 <- do.call(rbind, lapply
 # Removing rows without data
 
 ```{r}
-# Fruit cleaning
-fruit_2020 <- fruit_2020 %>% # rename cols to be more descriptive
-  rename(fruit = ...1, retail_price = ...2, retail_price_unit = ...3, yield = ...4, cup_eq_size = ...5, cup_eq_unit = ...6,cup_eq_price = ...7)
+#| message: false
+#| warning: false
+#| results: hide
 
-fruit_2020_clean <- fruit_2020 %>% # remove rows without data (these were just the citation of where the data came from)
-  filter(!substr(fruit, 1, 1) == "1") %>% 
-  filter(!substr(fruit, 1, 1) == "2") %>% 
-  filter(!substr(fruit, 1, 1) == "3") %>% 
-  filter(!substr(fruit, 1, 1) == "4") %>% 
-  filter(!substr(fruit, 1, 6) == "Source")
+# Fruit cleaning 
+# Febe: To make the code cleaner and more readable, I would like to suggest combining the multiple filter() statements into a single pipeline using |> and a regular expression.
+
+fruit_2020_clean <- fruit_2020 |>
+  rename(
+    fruit = ...1,
+    retail_price = ...2,
+    retail_price_unit = ...3,
+    yield = ...4,
+    cup_eq_size = ...5,
+    cup_eq_unit = ...6,
+    cup_eq_price = ...7
+  ) |>
+  filter(!str_detect(fruit, "^(1|2|3|4|Source)"))
+
 
 # Veggie cleaning
-veg_2020 <- veg_2020 %>% # rename cols to be more descriptive
-  rename(veg = ...1, retail_price = ...2, retail_price_unit = ...3, yield = ...4, cup_eq_size = ...5, cup_eq_unit = ...6,cup_eq_price = ...7)
+# Febe: The same here
 
-veg_2020_clean <- veg_2020 %>% # remove rows without data (these were just the citation of where the data came from)
-  filter(!substr(veg, 1, 1) == "1") %>% 
-  filter(!substr(veg, 1, 1) == "2") %>% 
-  filter(!substr(veg, 1, 1) == "3") %>% 
-  filter(!substr(veg, 1, 1) == "4") %>% 
-  filter(!substr(veg, 1, 6) == "Source")
+veg_2020_clean <- veg_2020 %>%
+  rename(
+    veg = ...1,
+    retail_price = ...2,
+    retail_price_unit = ...3,
+    yield = ...4,
+    cup_eq_size = ...5,
+    cup_eq_unit = ...6,
+    cup_eq_price = ...7
+  ) %>%
+  filter(!str_detect(veg, "^(1|2|3|4|Source)"))
+
 ```
 
 # Tidying the data
 
 ```{r}
+# Febe: I really admire the authors' willingness to tackle such a messy dataset. It requires a lot of extra work to clean, and this code chunk clearly reflects the effort and care put into the process. Great work!
+
 # Fruit
 fruit_names <- c("Apples", "Apricots", "Bananas", "Mixed berries", "Blackberries", "Blueberries", "Cantaloupe", "Cherries", "Clementines", "Cranberries", "Dates", "Figs", "Fruit cocktail", "Grapefruit", "Grapes", "Honeydew melon", "Kiwi", "Mangoes", "Nectarines", "Oranges", "Papaya", "Peaches", "Pears", "Pineapple", "Plums", "Pomegranate", "Raspberries", "Strawberries", "Watermelon") # creating a vector with the fruit names
 
+
+# Febe: We can combine the mutate functions together to make it more visiable
 fruit_2020_clean <- fruit_2020_clean |> 
   # fix the fruit column to isolate the fruit name
-  mutate(fruit = str_extract(fruit, "[^—]+")) |> 
-  # create a flag for fruit names
-  mutate(is_fruit = fruit %in% fruit_names) |> 
-  # fill the fruit name down
-  mutate(fruit_name = if_else(is_fruit, fruit, NA_character_)) |> 
+  mutate(fruit = str_extract(fruit, "[^—]+"),
+         is_fruit = fruit %in% fruit_names,
+         fruit_name = if_else(is_fruit, fruit, NA_character_)) |>
   fill(fruit_name, .direction = "down") |> 
   # remove rows where fruit column is the fruit name or "Form"
   filter(!is_fruit, fruit != "Form") |> 
@@ -95,11 +119,9 @@ veg_names <- c("Acorn squash", "Artichoke", "Asparagus", "Avocados", "Beets", "B
 
 veg_2020_clean <- veg_2020_clean |> 
   # fix the veg column to isolate the veg name
-  mutate(veg = str_extract(veg, "[^—]+")) |> 
-  # create a flag for veg names
-  mutate(is_veg = veg %in% veg_names) |> 
-  # fill the veg name down
-  mutate(veg_name = if_else(is_veg, veg, NA_character_)) |> 
+  mutate(veg = str_extract(veg, "[^—]+"),
+         is_veg = veg %in% veg_names,
+         veg_name = if_else(is_veg, veg, NA_character_)) |>
   fill(veg_name, .direction = "down") |> 
   # remove rows where veg column is the veg name or "Form"
   filter(!is_veg, veg != "Form") |> 
@@ -111,6 +133,7 @@ veg_2020_clean <- veg_2020_clean |>
   select(-is_veg) |> 
   # remove any rows with NA in the reatil_price column
   filter(!is.na(retail_price))
+
 ```
 
 # How does the price of fruits and vegetables vary based on form? (Kyla)
@@ -216,6 +239,9 @@ veg_form_plot <- veg_summary |>
 
 ```{r}
 #making a new column for the fruit groups -- I can add where I found this info in our introduction :P
+
+# Febe: As a small suggestion, since the fruit and vegetable pipelines are almost identical, you might consider wrapping the “family + summary + ANOVA” workflow into a helper function and reusing it for both datasets. This could reduce duplication and make the script even easier to maintain.
+
 
 fruit_family_data <- fruit_2020_clean %>%
    mutate(
@@ -382,3 +408,34 @@ normal_fruit_veg_plot <- fruit_veg_df %>%
 
 normal_fruit_veg_plot
 ```
+```{r}
+#Febe: Perhaps as an alternative, we could also consider plotting the mean price by form instead of filling by `name`, since the many colors might make the current plot a bit harder to interpret. 
+
+summary_form <- fruit_veg_df %>% 
+  group_by(fruit_veg, form) %>% 
+  summarize(
+    mean_price = mean(retail_price, na.rm = TRUE),
+    sd_price = sd(retail_price, na.rm = TRUE),
+    n = n(),
+    se_price = sd_price / sqrt(n),
+    .groups = "drop"
+  )
+
+ggplot(summary_form, aes(x = form, y = mean_price, fill = fruit_veg)) +
+  geom_col(position = "dodge", color = "black") +
+  geom_errorbar(aes(ymin = mean_price - se_price,
+                    ymax = mean_price + se_price),
+                width = 0.2,
+                position = position_dodge(0.9)) +
+  scale_fill_manual(values = c("fruit" = "tomato3", "veg" = "seagreen3")) +
+  labs(
+    x = "Form",
+    y = "Mean Retail Price",
+    fill = "Type",
+    title = "Mean Retail Price of Fruits vs Vegetables Across Forms"
+  ) +
+  theme_bw() +
+  theme(text = element_text(size = 14))
+
+```
+
