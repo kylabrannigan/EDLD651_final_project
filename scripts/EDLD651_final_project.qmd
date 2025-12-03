@@ -344,11 +344,11 @@ ggplot(summary_table, aes(x = reorder(family, mean_price), y = mean_price)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-# What is the different between retail price for fruits and vegatbles by form? (Cheyna)
+# What is the relationship between yeild and price? (Cheyna)
 
 # RQ 3 Data Cleaning
 ```{r}
-# examine difference between retail price for fruits and veggies grouped by form
+# examine the relationship between yeild and price
 fruit_2020_clean <- fruit_2020_clean %>% 
   rename(name = fruit_name) %>% #rename col to join fruit df with veg df
   filter(form == "Fresh"| form == "Frozen" | form == "Canned" |form == "Dried") # select forms common across produce 
@@ -365,36 +365,27 @@ fruit_veg_df <- bind_rows(fruit_2020_clean, veg_2020_clean)
 # RQ 3 Plots
 ```{r}
 # plot fruit and veg diff. 
-crazy_fruit_veg_plot <- fruit_veg_df %>% 
-  ggplot(aes(x = retail_price, y = form, fill = name)) +
-  geom_bar(stat = 'summary', position = 'dodge', color = "black") +
-  facet_wrap(~name)+
-  theme_minimal()+
-  theme(legend.position = "none")
+fruit_veg_df <- fruit_veg_df %>% 
+  mutate(yield = as.numeric(yield))
 
-crazy_fruit_veg_plot
+sorted_yield_price_plot <- fruit_veg_df %>% 
+  filter(yield <= 2) %>% 
+  ggplot(aes(x = yield, y = retail_price, color = fruit_veg)) +
+  geom_point() +
+  geom_smooth(method = "lm", fill = "lightgray") +
+  scale_color_manual(values = c("#94d2bd", "#ee9b00")) +
+  theme_minimal() +
+  labs(title = "Relationship between Yield and Retail Price",
+       x = "Yield", 
+       y = "Retail Price",
+       color = "Type")
 
-normal_fruit_veg_plot <- fruit_veg_df %>% 
-  ggplot(aes(x = retail_price, y = form, fill = name)) +
-  geom_bar(stat = 'summary', position = 'dodge', color = "black") +
-  facet_wrap(~fruit_veg)+
-  theme_minimal()+
-  theme(legend.position = "none")+
-  labs(
-    title = "Price Differences for Fruit and Veggies by Form",
-    x = "Retail Price",
-    y = "Form of Product"
-  )
-
-normal_fruit_veg_plot
+sorted_yield_price_plot
 ```
 
 # RQ3 analysis:  What is the different between retail price for fruits and vegatbles by form? 
 ```{r}
-price_form_anova <- aov(retail_price ~ form + fruit_veg, data = fruit_veg_df)
+sorted_yield_price_anova <- aov(retail_price ~ yield + fruit_veg, data = fruit_veg_df)
 
-summary(price_form_anova)
-
-pairwise.t.test(fruit_veg_df$retail_price, fruit_veg_df$form,
-                p.adjust.method = "bonferroni")
+summary(sorted_yield_price_anova)
 ```
