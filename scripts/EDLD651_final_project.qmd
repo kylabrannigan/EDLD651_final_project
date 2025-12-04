@@ -1,17 +1,35 @@
 ---
-title: "EDLD651_final_project"
-author: "Kyla & Erika & Cheyna"
+title: "Fruit and Vegetable Prices: EDLD651_final_project"
+author: "Kyla Brannigan, Erika Davis, & Cheyna Warner"
 format: pdf
+  code-fold: TRUE
 editor: visual
 ---
 
-<<<<<<< Updated upstream
-# Load Packages
+# Introduction
 
-=======
->>>>>>> Stashed changes
+With the cost of living on the rise (SOURCE), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (SOURCE). The central aim of the following project is to understand what factors impact retail price of fruits and vegetables in the United States.
+
+The guiding questions for this study were 
+  1. How does the price of fruits and vegetables varies based on form?
+  2. Do fruit and vegetable prices vary by family?
+  3. What is the relationship between yield and retail price of produce? 
+
+Our questions were selected based on IDK. We thought it was pertinent to IDK. 
+
+Notably, the data we used for this analysis did not contain information about produce family. To supplement, we IDK ERIKA WHATEVER RESEARCH YOU DID. 
+
+# Methods
+
+For this project, the DATASET from the PLACE WE GOT IT was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. A full description of the dataset can be found HERE. 
+
+Notably, the data we used for this analysis did not contain information about produce family. To supplement, we IDK ERIKA WHATEVER RESEARCH YOU DID.
+
+# Analysis 
 
 ```{r}
+# Load Packages
+
 library(here)
 library(janitor)
 library(rio)
@@ -21,10 +39,9 @@ library(dplyr)
 #install.packages("tm") <- i didn't have this package
 ```
 
+```{r}
 # Import Data
 
-<<<<<<< Updated upstream
-```{r}
 # Fruit data
 
 fruit_files <- list.files(pattern = ".xlsx", path = "../data/fruit-2020", full.names = TRUE)
@@ -39,9 +56,9 @@ veg_2020 <- do.call(rbind, lapply
         (veg_files, import, as.is=T, header = FALSE))
 ```
 
+```{r}
 # Removing rows without data
 
-```{r}
 # Fruit cleaning
 fruit_2020 <- fruit_2020 %>% # rename cols to be more descriptive
   rename(fruit = ...1, retail_price = ...2, retail_price_unit = ...3, yield = ...4, cup_eq_size = ...5, cup_eq_unit = ...6,cup_eq_price = ...7)
@@ -65,9 +82,9 @@ veg_2020_clean <- veg_2020 %>% # remove rows without data (these were just the c
   filter(!substr(veg, 1, 6) == "Source")
 ```
 
+```{r}
 # Tidying the data
 
-```{r}
 # Fruit
 fruit_names <- c("Apples", "Apricots", "Bananas", "Mixed berries", "Blackberries", "Blueberries", "Cantaloupe", "Cherries", "Clementines", "Cranberries", "Dates", "Figs", "Fruit cocktail", "Grapefruit", "Grapes", "Honeydew melon", "Kiwi", "Mangoes", "Nectarines", "Oranges", "Papaya", "Peaches", "Pears", "Pineapple", "Plums", "Pomegranate", "Raspberries", "Strawberries", "Watermelon") # creating a vector with the fruit names
 
@@ -113,9 +130,11 @@ veg_2020_clean <- veg_2020_clean |>
   filter(!is.na(retail_price))
 ```
 
-# How does the price of fruits and vegetables vary based on form? (Kyla)
+# RQ1
 
 ```{r}
+# How does the price of fruits and vegetables vary based on form? (Kyla)
+
 # remove the numbers at the end of the forms
 fruit_2020_clean$form <- removeNumbers(fruit_2020_clean$form)
 veg_2020_clean$form <- removeNumbers(veg_2020_clean$form)
@@ -168,53 +187,11 @@ veg_summary <- veg_2020_clean |>
             se_price = sd_price / sqrt(n))
 ```
 
-```{r}
-# ANOVAs to look at how retail price varies by fruit and veggie form
-fruit_form_anova_result <- aov(retail_price ~ form, data = fruit_2020_clean)
-summary(fruit_form_anova_result)
-pairwise.t.test(fruit_2020_clean$retail_price, fruit_2020_clean$form,
-                p.adjust.method = "bonferroni")
-
-veggie_form_anova_result <- aov(retail_price ~ form, data = veg_2020_clean)
-summary(veggie_form_anova_result)
-```
+# RQ2
 
 ```{r}
-# plotting average retail price by fruit form
-fruit_form_plot <- fruit_summary |> 
-  ggplot(aes(x = form, y = mean_retail_price, fill = form)) +
-  geom_bar(stat = "identity") +
-  geom_errorbar(aes(ymin = mean_retail_price - se_price, ymax = mean_retail_price + se_price), width = 0.3) +
-  labs(title = "Average Fruit Retail Prices by Form",
-       x = "Form",
-       y = "Average Retail Price") +
-  scale_fill_manual(values = c("#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03")) +
-  theme(theme_minimal(),
-        legend.position = "NULL",
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_blank(),  
-        plot.background = element_blank())
-
-# plotting average retail price by veggie form
-veg_form_plot <- veg_summary |> 
-  ggplot(aes(x = form, y = mean_retail_price, fill = form)) +
-  geom_bar(stat = "identity") +
-  geom_errorbar(aes(ymin = mean_retail_price - se_price, ymax = mean_retail_price + se_price), width = 0.3) +
-  labs(title = "Average Vegetable Retail Prices by Form",
-       x = "Form",
-       y = "Average Retail Price") +
-  scale_fill_manual(values = c("#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03")) +
-  theme(theme_minimal(),
-        legend.position = "NULL",
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_blank(),  
-        plot.background = element_blank())
-```
-
-
 # Do fruit and vegetable prices vary by family (berries, stone fruit etc)? (Erika)
 
-```{r}
 #making a new column for the fruit groups -- I can add where I found this info in our introduction :P
 
 fruit_family_data <- fruit_2020_clean %>%
@@ -241,44 +218,8 @@ fruit_family_data <- fruit_2020_clean %>%
     )
   )
 
-#looking at summary stats by family ... using cup eq. price so we have a relatively similar amount by price
-str(fruit_family_data$cup_eq_price)
-fruit_family_data <- fruit_family_data %>% 
-  mutate(cup_eq_price = as.numeric(cup_eq_price))
-
-fruit_family_data %>%
-  group_by(family) %>%
-  summarize(
-    mean_price = mean(cup_eq_price, na.rm = TRUE),
-    median_price = median(cup_eq_price, na.rm = TRUE),
-    sd_price = sd(cup_eq_price, na.rm = TRUE),
-    n = n()
-  )
-
-# running a one way anova to see if price (continuous) varies by family (categorical). I found that it does not vary signifiantly (p = .158)
-anova_result <- aov(cup_eq_price ~ family, data = fruit_family_data)
-summary(anova_result)
-
-#plot
-plot_table1 <- fruit_family_data %>%
-  group_by(family) %>%
-  summarize(
-    mean_price = mean(cup_eq_price, na.rm = TRUE),
-    sd_price = sd(cup_eq_price, na.rm = TRUE),
-    n = n(),
-    se_price = sd_price / sqrt(n)
-  )
-
-ggplot(plot_table1, aes(x = reorder(family, mean_price), y = mean_price)) +
-  geom_col(fill = "deeppink4") +
-  geom_errorbar(aes(ymin = mean_price - se_price, ymax = mean_price + se_price), width = 0.3) +
-  labs(x = "Fruit Family", y = "Mean Price per Unit", title = "Mean Fruit Prices by Family") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
-```{r}
 # doing the same exact thing but for vegetables 
+
 veg_family_data <- veg_2020_clean %>%
    mutate(
     family = case_when(
@@ -317,6 +258,109 @@ str(veg_family_data$cup_eq_price)
 veg_family_data <- veg_family_data %>% 
   mutate(cup_eq_price = as.numeric(cup_eq_price))
 
+```
+
+# RQ3
+
+```{r}
+# CHEYNA
+# examine the relationship between yield and price
+fruit_2020_clean <- fruit_2020_clean %>% 
+  rename(name = fruit_name) %>% #rename col to join fruit df with veg df
+  filter(form == "Fresh"| form == "Frozen" | form == "Canned" |form == "Dried") # select forms common across produce 
+  fruit_2020_clean$fruit_veg <- "Fruit" 
+
+veg_2020_clean <- veg_2020_clean %>% 
+  rename(name = veg_name)
+  veg_2020_clean$fruit_veg <- "Vegetable" 
+
+# make fruit and veg df
+fruit_veg_df <- bind_rows(fruit_2020_clean, veg_2020_clean)
+```
+
+# Results
+
+```{r}
+# KYLA
+# ANOVAs to look at how retail price varies by fruit and veggie form
+fruit_form_anova_result <- aov(retail_price ~ form, data = fruit_2020_clean)
+summary(fruit_form_anova_result)
+pairwise.t.test(fruit_2020_clean$retail_price, fruit_2020_clean$form,
+                p.adjust.method = "bonferroni")
+
+veggie_form_anova_result <- aov(retail_price ~ form, data = veg_2020_clean)
+summary(veggie_form_anova_result)
+
+# plotting average retail price by fruit form
+fruit_form_plot <- fruit_summary |> 
+  ggplot(aes(x = form, y = mean_retail_price, fill = form)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = mean_retail_price - se_price, ymax = mean_retail_price + se_price), width = 0.3) +
+  labs(title = "Average Fruit Retail Prices by Form",
+       x = "Form",
+       y = "Average Retail Price") +
+  scale_fill_manual(values = c("#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03")) +
+  theme(theme_minimal(),
+        legend.position = "NULL",
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_blank(),  
+        plot.background = element_blank())
+
+# plotting average retail price by veggie form
+veg_form_plot <- veg_summary |> 
+  ggplot(aes(x = form, y = mean_retail_price, fill = form)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = mean_retail_price - se_price, ymax = mean_retail_price + se_price), width = 0.3) +
+  labs(title = "Average Vegetable Retail Prices by Form",
+       x = "Form",
+       y = "Average Retail Price") +
+  scale_fill_manual(values = c("#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03")) +
+  theme(theme_minimal(),
+        legend.position = "NULL",
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_blank(),  
+        plot.background = element_blank())
+```
+
+```{r}
+# ERIKA 
+#looking at summary stats by family ... using cup eq. price so we have a relatively similar amount by price
+str(fruit_family_data$cup_eq_price)
+fruit_family_data <- fruit_family_data %>% 
+  mutate(cup_eq_price = as.numeric(cup_eq_price))
+
+fruit_family_data %>%
+  group_by(family) %>%
+  summarize(
+    mean_price = mean(cup_eq_price, na.rm = TRUE),
+    median_price = median(cup_eq_price, na.rm = TRUE),
+    sd_price = sd(cup_eq_price, na.rm = TRUE),
+    n = n()
+  )
+
+# running a one way anova to see if price (continuous) varies by family (categorical). I found that it does not vary signifiantly (p = .158)
+anova_result <- aov(cup_eq_price ~ family, data = fruit_family_data)
+summary(anova_result)
+
+#plot
+plot_table1 <- fruit_family_data %>%
+  group_by(family) %>%
+  summarize(
+    mean_price = mean(cup_eq_price, na.rm = TRUE),
+    sd_price = sd(cup_eq_price, na.rm = TRUE),
+    n = n(),
+    se_price = sd_price / sqrt(n)
+  )
+
+ggplot(plot_table1, aes(x = reorder(family, mean_price), y = mean_price)) +
+  geom_col(fill = "deeppink4") +
+  geom_errorbar(aes(ymin = mean_price - se_price, ymax = mean_price + se_price), width = 0.3) +
+  labs(x = "Fruit Family", y = "Mean Price per Unit", title = "Mean Fruit Prices by Family") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# same thing but for vegetables 
+
 anova_result2 <- aov(cup_eq_price ~ family, data = veg_family_data)
 summary(anova_result2) # this one DID have a significant difference (p < 0.001) so i did post-hoc to see what's going on. 
 
@@ -344,26 +388,8 @@ ggplot(summary_table, aes(x = reorder(family, mean_price), y = mean_price)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-# What is the relationship between yeild and price? (Cheyna)
-
-# RQ 3 Data Cleaning
 ```{r}
-# examine the relationship between yeild and price
-fruit_2020_clean <- fruit_2020_clean %>% 
-  rename(name = fruit_name) %>% #rename col to join fruit df with veg df
-  filter(form == "Fresh"| form == "Frozen" | form == "Canned" |form == "Dried") # select forms common across produce 
-  fruit_2020_clean$fruit_veg <- "Fruit" 
-
-veg_2020_clean <- veg_2020_clean %>% 
-  rename(name = veg_name)
-  veg_2020_clean$fruit_veg <- "Vegetable" 
-
-# make fruit and veg df
-fruit_veg_df <- bind_rows(fruit_2020_clean, veg_2020_clean)
-```
-
-# RQ 3 Plots
-```{r}
+# CHEYNA 
 # plot fruit and veg diff. 
 fruit_veg_df <- fruit_veg_df %>% 
   mutate(yield = as.numeric(yield))
@@ -381,11 +407,17 @@ sorted_yield_price_plot <- fruit_veg_df %>%
        color = "Type")
 
 sorted_yield_price_plot
-```
 
-# RQ3 analysis:  What is the different between retail price for fruits and vegatbles by form? 
-```{r}
+# analysis 
 sorted_yield_price_anova <- aov(retail_price ~ yield + fruit_veg, data = fruit_veg_df)
 
 summary(sorted_yield_price_anova)
 ```
+
+# ADD SUMMARY TABLE
+
+# Discussion 
+
+# Conclusion 
+
+# References 
