@@ -18,14 +18,12 @@ execute:
   warnings: false
   message: false
 ---
+
 # Introduction
 
-With the cost of living on the rise (SOURCE), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (SOURCE). The central aim of this project is to understand how different factors impact retail price of fruits and vegetables in the United States. We selected factors such as yield, produce family, and produce form for the present analysis. 
+With the cost of living on the rise (SOURCE), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (SOURCE). The central aim of this project is to understand how different factors impact retail price of fruits and vegetables in the United States. We selected factors such as yield, produce family, and produce form for the present analysis.
 
-The guiding questions for this study were: 
-  1. How does the price of fruits and vegetables varies based on form?
-  2. Do fruit and vegetable prices vary by family?
-  3. What is the relationship between yield and retail price of produce? 
+The guiding questions for this study were: 1. How does the price of fruits and vegetables varies based on form? 2. Do fruit and vegetable prices vary by family? 3. What is the relationship between yield and retail price of produce?
 
 # Methods
 
@@ -41,10 +39,12 @@ library(rio)
 library(tidyverse)
 library(tm)
 library(dplyr)
+library(knitr)
 #install.packages("tm") <- i didn't have this package
 ```
 
-First, we imported the data using the list.files argument and rbinded our files to make a fruit and a vegetable data frame. Once all of the data was imported, we had to clean and tidy the data frames as they were incredibly messy. In this step, we removed rows without data, renamed columns, and extracted irrelevant information such as citations and instructions. Code to complete this action can be found below.  
+First, we imported the data using the list.files argument and rbinded our files to make a fruit and a vegetable data frame. Once all of the data was imported, we had to clean and tidy the data frames as they were incredibly messy. In this step, we removed rows without data, renamed columns, and extracted irrelevant information such as citations and instructions. Code to complete this action can be found below.
+
 ```{r}
 # Import Data
 
@@ -136,7 +136,7 @@ veg_2020_clean <- veg_2020_clean |>
   filter(!is.na(retail_price))
 ```
 
-For our research questions, some specific data formatting and tidying was necessary. For research question one, how the price of fruits and vegetables varies based on form, we needed to alter the form category to better allow for analysis. For example, tomatoes were listed as "Grape", "Roma", and "Large" rather than just fresh. We simple converted the information to say "Fresh" so it was in alignment with other vegetables in the data frame. 
+For our research questions, some specific data formatting and tidying was necessary. For research question one, how the price of fruits and vegetables varies based on form, we needed to alter the form category to better allow for analysis. For example, tomatoes were listed as "Grape", "Roma", and "Large" rather than just fresh. We simple converted the information to say "Fresh" so it was in alignment with other vegetables in the data frame.
 
 ```{r}
 # How does the price of fruits and vegetables vary based on form? (Kyla)
@@ -266,7 +266,7 @@ veg_family_data <- veg_family_data %>%
 
 ```
 
-Finally, for research question three minimal alterations were made to the data frame for analysis. A column indicating if a produce item was a fruit or a vegetable was added to assist in grouping for analysis. 
+Finally, for research question three minimal alterations were made to the data frame for analysis. A column indicating if a produce item was a fruit or a vegetable was added to assist in grouping for analysis.
 
 ```{r}
 # CHEYNA
@@ -286,7 +286,41 @@ fruit_veg_df <- bind_rows(fruit_2020_clean, veg_2020_clean)
 
 # Results
 
-Below is a descriptive table of the data. Results are presented by research question. 
+Below are descriptive tables of the data. Results are presented by research question.
+
+```{r}
+price_by_form_summary_df <- fruit_veg_df |> 
+  select(fruit_veg, name, form, retail_price) |> 
+  group_by(fruit_veg) |> 
+  mutate(row = row_number()) |> 
+  pivot_wider(names_from = form,
+              values_from = retail_price) |> 
+  select(-row) |> 
+  summarise(mean_fresh_price = mean(Fresh, na.rm = TRUE),
+            mean_frozen_price = mean(Frozen, na.rm = TRUE),
+            mean_canned_price = mean(Canned, na.rm = TRUE),
+            mean_dried_price = mean(Dried, na.rm = TRUE))
+
+price_by_form_summary_df |> 
+  kable(caption = "Mean Retail Prices of Fruits and Vegetables by Form",
+        col.names = c("Type", "Fresh", "Frozen", "Canned", "Dried"),
+        digits = 2)
+
+price_by_family_summary_df <- fruit_family_data |> 
+  mutate(cup_eq_price = as.numeric(cup_eq_price)) |> 
+  full_join(veg_family_data) |> 
+  mutate(name = coalesce(fruit_name, veg_name)) |> 
+  relocate(name, .before = form) |> 
+  select(name, family, retail_price) |> 
+  group_by(family) |> 
+  summarise(mean_price = mean(retail_price, na.rm = TRUE))
+
+price_by_family_summary_df |> 
+  kable(caption = "Mean Retail Prices of Fruits and Vegetables by Family",
+        col.names = c("Family", "Mean Retail Price"),
+        digits = 2)
+  
+```
 
 ```{r}
 # KYLA
@@ -330,8 +364,8 @@ veg_form_plot <- veg_summary |>
         plot.background = element_blank())
 ```
 
-The retail price of fruits varied significantly by form, (F(6) = 12.59, p < .001).In running a post-hoc test, dried fruits were priced significantly higher than all other forms. However, there were no other differences between forms. The retail price of vegetables did NOT vary significantly by form (F(3) = 1.424, p = .243). 
- 
+The retail price of fruits varied significantly by form, (F(6) = 12.59, p \< .001).In running a post-hoc test, dried fruits were priced significantly higher than all other forms. However, there were no other differences between forms. The retail price of vegetables did NOT vary significantly by form (F(3) = 1.424, p = .243).
+
 ```{r}
 # ERIKA 
 #looking at summary stats by family ... using cup eq. price so we have a relatively similar amount by price
@@ -398,7 +432,7 @@ ggplot(summary_table, aes(x = reorder(family, mean_price), y = mean_price)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-Vegetables did vary significantly by family, F(12) = 4.786, p < .001. In running a post-hoc test, the Liliceae family (e.g. onions & asparagus) were priced significantly higher than all other families. There were no other differences between families. Fruits did not vary significantly by family, F(6) = 1.623, p = .158. 
+Vegetables did vary significantly by family, F(12) = 4.786, p \< .001. In running a post-hoc test, the Liliceae family (e.g. onions & asparagus) were priced significantly higher than all other families. There were no other differences between families. Fruits did not vary significantly by family, F(6) = 1.623, p = .158.
 
 ```{r}
 # CHEYNA 
@@ -426,10 +460,10 @@ sorted_yield_price_anova <- aov(retail_price ~ yield + fruit_veg, data = fruit_v
 summary(sorted_yield_price_anova)
 ```
 
-Finally, there was a significant difference between yield and price of fruits and yield and price of vegetables (F(1) = 16.991, p < .001). 
- 
-# Discussion 
+Finally, there was a significant difference between yield and price of fruits and yield and price of vegetables (F(1) = 16.991, p \< .001).
 
-# Conclusion 
+# Discussion
 
-# References 
+# Conclusion
+
+# References
