@@ -1,35 +1,40 @@
 ---
 title: "Fruit and Vegetable Prices: EDLD651_final_project"
 author: "Kyla Brannigan, Erika Davis, & Cheyna Warner"
-format: pdf
-  code-fold: TRUE
+date: "2025-12-10"
+abstract: |
+  insert abstract text here
+abstract-title: "Fruit and Vegetable Prices"
+format: 
+  html:
+    toc: true
+    toc-location: left
+    toc-title: Table of Contents
+    code-fold: true
 editor: visual
+execute:
+  eval: false
+  echo: false
+  warnings: false
+  message: false
 ---
-
 # Introduction
 
-With the cost of living on the rise (SOURCE), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (SOURCE). The central aim of the following project is to understand what factors impact retail price of fruits and vegetables in the United States.
+With the cost of living on the rise (SOURCE), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (SOURCE). The central aim of this project is to understand how different factors impact retail price of fruits and vegetables in the United States. We selected factors such as yield, produce family, and produce form for the present analysis. 
 
-The guiding questions for this study were 
+The guiding questions for this study were: 
   1. How does the price of fruits and vegetables varies based on form?
   2. Do fruit and vegetable prices vary by family?
   3. What is the relationship between yield and retail price of produce? 
 
-Our questions were selected based on IDK. We thought it was pertinent to IDK. 
-
-Notably, the data we used for this analysis did not contain information about produce family. To supplement, we IDK ERIKA WHATEVER RESEARCH YOU DID. 
-
 # Methods
 
-For this project, the DATASET from the PLACE WE GOT IT was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. A full description of the dataset can be found HERE. 
+For this project, the Fruit and Vegetable Prices data from the USDA Economic Research Service was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. This data contains information about over 150 types of fresh and processed fruit and vegetables.
 
-Notably, the data we used for this analysis did not contain information about produce family. To supplement, we IDK ERIKA WHATEVER RESEARCH YOU DID.
-
-# Analysis 
+To begin our analysis, we started by compiling and cleaning the raw data provided by the USDA Economic Research Service. To this end, we used the packages IDK HOW TO CITE THEM I FORGET.
 
 ```{r}
 # Load Packages
-
 library(here)
 library(janitor)
 library(rio)
@@ -39,6 +44,7 @@ library(dplyr)
 #install.packages("tm") <- i didn't have this package
 ```
 
+First, we imported the data using the list.files argument and rbinded our files to make a fruit and a vegetable data frame. Once all of the data was imported, we had to clean and tidy the data frames as they were incredibly messy. In this step, we removed rows without data, renamed columns, and extracted irrelevant information such as citations and instructions. Code to complete this action can be found below.  
 ```{r}
 # Import Data
 
@@ -130,7 +136,7 @@ veg_2020_clean <- veg_2020_clean |>
   filter(!is.na(retail_price))
 ```
 
-# RQ1
+For our research questions, some specific data formatting and tidying was necessary. For research question one, how the price of fruits and vegetables varies based on form, we needed to alter the form category to better allow for analysis. For example, tomatoes were listed as "Grape", "Roma", and "Large" rather than just fresh. We simple converted the information to say "Fresh" so it was in alignment with other vegetables in the data frame. 
 
 ```{r}
 # How does the price of fruits and vegetables vary based on form? (Kyla)
@@ -187,7 +193,7 @@ veg_summary <- veg_2020_clean |>
             se_price = sd_price / sqrt(n))
 ```
 
-# RQ2
+Our second research question required the most synthesis as it pertained to information not originally provided in the data set. To supplement, we IDK ERIKA WHATEVER RESEARCH YOU DID.
 
 ```{r}
 # Do fruit and vegetable prices vary by family (berries, stone fruit etc)? (Erika)
@@ -260,7 +266,7 @@ veg_family_data <- veg_family_data %>%
 
 ```
 
-# RQ3
+Finally, for research question three minimal alterations were made to the data frame for analysis. A column indicating if a produce item was a fruit or a vegetable was added to assist in grouping for analysis. 
 
 ```{r}
 # CHEYNA
@@ -279,6 +285,8 @@ fruit_veg_df <- bind_rows(fruit_2020_clean, veg_2020_clean)
 ```
 
 # Results
+
+Below is a descriptive table of the data. Results are presented by research question. 
 
 ```{r}
 # KYLA
@@ -322,6 +330,8 @@ veg_form_plot <- veg_summary |>
         plot.background = element_blank())
 ```
 
+The retail price of fruits varied significantly by form, (F(6) = 12.59, p < .001).In running a post-hoc test, dried fruits were priced significantly higher than all other forms. However, there were no other differences between forms. The retail price of vegetables did NOT vary significantly by form (F(3) = 1.424, p = .243). 
+ 
 ```{r}
 # ERIKA 
 #looking at summary stats by family ... using cup eq. price so we have a relatively similar amount by price
@@ -388,6 +398,8 @@ ggplot(summary_table, aes(x = reorder(family, mean_price), y = mean_price)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+Vegetables did vary significantly by family, F(12) = 4.786, p < .001. In running a post-hoc test, the Liliceae family (e.g. onions & asparagus) were priced significantly higher than all other families. There were no other differences between families. Fruits did not vary significantly by family, F(6) = 1.623, p = .158. 
+
 ```{r}
 # CHEYNA 
 # plot fruit and veg diff. 
@@ -414,8 +426,8 @@ sorted_yield_price_anova <- aov(retail_price ~ yield + fruit_veg, data = fruit_v
 summary(sorted_yield_price_anova)
 ```
 
-# ADD SUMMARY TABLE
-
+Finally, there was a significant difference between yield and price of fruits and yield and price of vegetables (F(1) = 16.991, p < .001). 
+ 
 # Discussion 
 
 # Conclusion 
