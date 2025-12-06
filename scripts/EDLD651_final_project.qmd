@@ -24,7 +24,7 @@ fig-height: 8
 
 # Introduction
 
-With the cost of living on the rise (SOURCE), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (SOURCE). The central aim of this project is to understand how different factors impact retail price of fruits and vegetables in the United States. We selected factors such as yield, produce family, and produce form for the present analysis.
+With the cost of living on the rise (McCants, 2023; see: @McCants), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (Sweitzer & Davidenko, see @USDAsummary). The central aim of this project is to understand how different factors impact retail price of fruits and vegetables in the United States. We selected factors such as yield, produce family, and produce form for the present analysis.
 
 The guiding questions for this study were:
 
@@ -36,7 +36,7 @@ The guiding questions for this study were:
 
 # Methods
 
-For this project, the Fruit and Vegetable Prices data from the USDA Economic Research Service was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. This data contains information about over 150 types of fresh and processed fruit and vegetables.
+For this project, the Fruit and Vegetable Prices data from the USDA Economic Research Service (see: @USDA_ERS) was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. This data contains information about over 150 types of fresh and processed fruit and vegetables.
 
 To begin our analysis, we started by compiling and cleaning the raw data provided by the USDA Economic Research Service. To this end, we used the following packages: @here2020, @janitor2024, @rio2023, @tidyverse, @knitr2025, @dplyr2023, @tm2025, @2025R.
 
