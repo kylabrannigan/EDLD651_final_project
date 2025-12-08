@@ -304,11 +304,13 @@ Below are descriptive tables of the data (Table @tbl-1) and (Table @tbl-2).
 #| message: false
 #| include: true
 
-price_by_form_summary_df <- fruit_veg_df |>
+price_by_form_wide <- fruit_veg_df |>
   select(fruit_veg, name, form, retail_price) |>
   group_by(fruit_veg) |>
   mutate(row = row_number()) |>
-  pivot_wider(names_from = form, values_from = retail_price) |>
+  pivot_wider(names_from = form, values_from = retail_price) 
+
+price_by_form_summary_df <- price_by_form_wide |>
   select(-row) |>
   summarise(
     mean_fresh_price = mean(Fresh, na.rm = TRUE),
@@ -317,11 +319,15 @@ price_by_form_summary_df <- fruit_veg_df |>
     mean_dried_price = mean(Dried, na.rm = TRUE)
   )
 
-
-
 knitr::kable(price_by_form_summary_df,
              col.names = c("Type", "Fresh", "Frozen", "Canned", "Dried"),
              digits = 2)
+
+price_by_form_long <- price_by_form_wide |> 
+  pivot_longer(cols = c("Fresh", "Frozen", "Canned", "Dried"), 
+               names_to = "Form",
+               values_to = "Price") |> 
+  filter(!is.na(Price))
 ```
 
 ```{r}
