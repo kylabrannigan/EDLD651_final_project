@@ -24,7 +24,7 @@ fig-height: 8
 
 # Introduction
 
-With the cost of living on the rise (McCants, 2023; see: @McCants), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (Sweitzer & Davidenko, see @USDAsummary). The central aim of this project is to understand how different factors impact retail price of fruits and vegetables in the United States. We selected factors such as yield, produce family, and produce form for the present analysis.
+With the cost of living on the rise (@McCants), it is important to determine how essential factors, such as food prices, are modulated. Though just a piece of the puzzle, the cost of fruits and vegetables can weigh heavily on consumers decisions in the grocery store (@USDA_summary). The central aim of this project is to understand how different factors impact retail price of fruits and vegetables in the United States. We selected factors such as yield, produce family, and produce form for the present analysis.
 
 The guiding questions for this study were:
 
@@ -36,9 +36,9 @@ The guiding questions for this study were:
 
 # Methods
 
-For this project, the Fruit and Vegetable Prices data from the USDA Economic Research Service (see: @USDA_ERS) was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. This data contains information about over 150 types of fresh and processed fruit and vegetables.
+For this project, the Fruit and Vegetable Prices data from the USDA Economic Research Service (@USDA_ERS) was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. This data contains information about over 150 types of fresh and processed fruit and vegetables.
 
-To begin our analysis, we started by compiling and cleaning the raw data provided by the USDA Economic Research Service. To this end, we used the following packages: @here2025, @janitor2024, @rio2023, @tidyverse, @knitr2025, @dplyr2023, @tm2025, @2025R.
+To begin our analysis, we started by compiling and cleaning the raw data provided by the USDA Economic Research Service. To this end, we used the following packages: @here2025, @janitor2024, @rio2023, @tidyverse, @knitr2025, @dplyr2023, @tm2025, @R2025.
 
 ```{r}
 # Load Packages
@@ -201,7 +201,7 @@ veg_summary <- veg_2020_clean |>
             se_price = sd_price / sqrt(n))
 ```
 
-Our second research question required the most synthesis as it pertained to information not originally provided in the data set. To supplement, we did research on what families each fruit and vegetable in the data set belonged to. Using this information, we grouped fruits into seven families: stone fruit, berries, pomes, citrus, melons, mixed fruits, and synconiums (USDA, 2018, see: @USDA). Vegetables were grouped into 13 families (Louis Bonduelle Foundation, 2016: see @VegCitation; Porchside Gardening, 2010: see @VegCitation2), with one of the families being foods that are culinarily vegetables, but botanically classed as fruits. These were kept with the fruits as the culinary classification was more appropriate for our questions.
+Our second research question required the most synthesis as it pertained to information not originally provided in the data set. To supplement, we did research on what families each fruit and vegetable in the data set belonged to. Using this information, we grouped fruits into seven families: stone fruit, berries, pomes, citrus, melons, mixed fruits, and synconiums (@USDA). Vegetables were grouped into 13 families (@VegCitation; @VegCitation2), with one of the families being foods that are culinarily vegetables, but botanically classed as fruits. These were kept with the fruits as the culinary classification was more appropriate for our questions.
 
 ```{r}
 # Do fruit and vegetable prices vary by family (berries, stone fruit etc)? (Erika)
@@ -294,42 +294,59 @@ fruit_veg_df <- bind_rows(fruit_2020_clean, veg_2020_clean)
 
 # Results
 
-Below are descriptive tables of the data. @table_1 and @table_2
+Below are descriptive tables of the data (Table @tbl-1) and (Table @tbl-2).
 
 ```{r}
-price_by_form_summary_df <- fruit_veg_df |> 
-  select(fruit_veg, name, form, retail_price) |> 
-  group_by(fruit_veg) |> 
-  mutate(row = row_number()) |> 
-  pivot_wider(names_from = form,
-              values_from = retail_price) |> 
-  select(-row) |> 
-  summarise(mean_fresh_price = mean(Fresh, na.rm = TRUE),
-            mean_frozen_price = mean(Frozen, na.rm = TRUE),
-            mean_canned_price = mean(Canned, na.rm = TRUE),
-            mean_dried_price = mean(Dried, na.rm = TRUE))
+#| label: tbl-1
+#| tbl-cap: "Mean Retail Prices of Fruits and Vegetables by Form"
+#| echo: false
+#| warning: false
+#| message: false
+#| include: true
+
+price_by_form_summary_df <- fruit_veg_df |>
+  select(fruit_veg, name, form, retail_price) |>
+  group_by(fruit_veg) |>
+  mutate(row = row_number()) |>
+  pivot_wider(names_from = form, values_from = retail_price) |>
+  select(-row) |>
+  summarise(
+    mean_fresh_price = mean(Fresh, na.rm = TRUE),
+    mean_frozen_price = mean(Frozen, na.rm = TRUE),
+    mean_canned_price = mean(Canned, na.rm = TRUE),
+    mean_dried_price = mean(Dried, na.rm = TRUE)
+  )
 
 
-table_1 <- price_by_form_summary_df |> 
-  kable(caption = "Mean Retail Prices of Fruits and Vegetables by Form",
-        col.names = c("Type", "Fresh", "Frozen", "Canned", "Dried"),
-        digits = 2)
+
+knitr::kable(price_by_form_summary_df,
+             col.names = c("Type", "Fresh", "Frozen", "Canned", "Dried"),
+             digits = 2)
 ```
 
 ```{r}
-price_by_family_summary_df <- fruit_family_data |> 
-  mutate(cup_eq_price = as.numeric(cup_eq_price)) |> 
-  full_join(veg_family_data) |> 
-  mutate(name = coalesce(fruit_name, veg_name)) |> 
-  relocate(name, .before = form) |> 
-  select(name, family, retail_price) |> 
-  group_by(family) |> 
+#| label: tbl-2
+#| tbl-cap: "Mean Retail Prices of Fruits and Vegetables by Family"
+#| echo: false
+#| warning: false
+#| message: false
+#| include: true
+
+price_by_family_summary_df <- fruit_family_data |>
+  mutate(cup_eq_price = as.numeric(cup_eq_price)) |>
+  full_join(veg_family_data) |>
+  mutate(name = coalesce(fruit_name, veg_name)) |>
+  relocate(name, .before = form) |>
+  select(name, family, retail_price) |>
+  group_by(family) |>
   summarise(mean_price = mean(retail_price, na.rm = TRUE))
 
-table_2 <- price_by_family_summary_df |> 
-  kable(caption = "Mean Retail Prices of Fruits and Vegetables by Family",
-        col.names = c("Family", "Mean Retail Price"),
-        digits = 2)
+knitr::kable(
+  price_by_family_summary_df,
+  col.names = c("Family", "Mean Retail Price"),
+  digits = 2
+)
+
 ```
 
 ```{r}
@@ -345,6 +362,7 @@ summary(veggie_form_anova_result)
 
 ```{r figure-1}
 #|label: figure-1
+#|echo: false
 #|fig-cap: "average retail price by fruit form."
 #|warning: false
 #|include: true
@@ -365,7 +383,14 @@ fruit_summary |>
         plot.background = element_blank())
 ```
 
-```{r}
+```{r figure-2}
+#|label: figure-2
+#|echo: false
+#|fig-cap: "average retail price by fruit form."
+#|warning: false
+#|include: true
+
+
 # plotting average retail price by veggie form
 veg_form_plot <- veg_summary |> 
   ggplot(aes(x = form, y = mean_retail_price, fill = form)) +
