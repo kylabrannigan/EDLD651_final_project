@@ -38,7 +38,7 @@ The guiding questions for this study were:
 
 For this project, the Fruit and Vegetable Prices data from the USDA Economic Research Service (see: @USDA_ERS) was used to shed light on questions such as how the price of fruits and vegetables varies based on form, if fruit and vegetable prices vary by family, and how yield impacts price of produce. This data contains information about over 150 types of fresh and processed fruit and vegetables.
 
-To begin our analysis, we started by compiling and cleaning the raw data provided by the USDA Economic Research Service. To this end, we used the following packages: @here2020, @janitor2024, @rio2023, @tidyverse, @knitr2025, @dplyr2023, @tm2025, @2025R.
+To begin our analysis, we started by compiling and cleaning the raw data provided by the USDA Economic Research Service. To this end, we used the following packages: @here2025, @janitor2024, @rio2023, @tidyverse, @knitr2025, @dplyr2023, @tm2025, @2025R.
 
 ```{r}
 # Load Packages
@@ -201,7 +201,7 @@ veg_summary <- veg_2020_clean |>
             se_price = sd_price / sqrt(n))
 ```
 
-Our second research question required the most synthesis as it pertained to information not originally provided in the data set. To supplement, we did research on what families each fruit and vegetable in the data set belonged to. Using this information, we grouped fruits into seven families: stone fruit, berries, pomes, citrus, melons, mixed fruits, and synconiums (USDA, 2018, see: @USDA). Vegetables were  grouped into 13 families (Louis Bonduelle Foundation, 2016: see @VegCitation; Porchside Gardening, 2010: see @VegCitation2), with one of the families being foods that are culinarily vegetables, but botanically classed as fruits. These were kept with the fruits as the culinary classification was more appropriate for our questions. 
+Our second research question required the most synthesis as it pertained to information not originally provided in the data set. To supplement, we did research on what families each fruit and vegetable in the data set belonged to. Using this information, we grouped fruits into seven families: stone fruit, berries, pomes, citrus, melons, mixed fruits, and synconiums (USDA, 2018, see: @USDA). Vegetables were grouped into 13 families (Louis Bonduelle Foundation, 2016: see @VegCitation; Porchside Gardening, 2010: see @VegCitation2), with one of the families being foods that are culinarily vegetables, but botanically classed as fruits. These were kept with the fruits as the culinary classification was more appropriate for our questions.
 
 ```{r}
 # Do fruit and vegetable prices vary by family (berries, stone fruit etc)? (Erika)
@@ -343,7 +343,6 @@ veggie_form_anova_result <- aov(retail_price ~ form, data = veg_2020_clean)
 summary(veggie_form_anova_result)
 ```
 
-
 ```{r figure-1}
 #|label: figure-1
 #|fig-cap: "average retail price by fruit form."
@@ -365,7 +364,6 @@ fruit_summary |>
         panel.background = element_blank(),  
         plot.background = element_blank())
 ```
-
 
 ```{r}
 # plotting average retail price by veggie form
@@ -389,8 +387,7 @@ veg_form_plot
 Figure 1 shows that the retail price of fruits varied significantly by form, (F(6) = 12.59, p \< .001). In running a post-hoc test, dried fruits were priced significantly higher than all other forms. However, there were no other differences between forms (Figure 2). The retail price of vegetables did NOT vary significantly by form (F(3) = 1.424, p = .243).
 
 ```{r}
-# ERIKA 
-#looking at summary stats by family ... using cup eq. price so we have a relatively similar amount by price
+
 str(fruit_family_data$cup_eq_price)
 fruit_family_data <- fruit_family_data %>% 
   mutate(cup_eq_price = as.numeric(cup_eq_price))
