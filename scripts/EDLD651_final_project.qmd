@@ -303,6 +303,7 @@ Below are descriptive tables of the data (Table @tbl-1) and (Table @tbl-2).
 #| warning: false
 #| message: false
 #| include: true
+#| results: asis
 
 price_by_form_summary_df <- fruit_veg_df |>
   select(fruit_veg, name, form, retail_price) |>
@@ -330,7 +331,7 @@ knitr::kable(price_by_form_summary_df,
 #| echo: false
 #| warning: false
 #| message: false
-#| include: true
+#| results: asis
 
 price_by_family_summary_df <- fruit_family_data |>
   mutate(cup_eq_price = as.numeric(cup_eq_price)) |>
@@ -365,7 +366,7 @@ summary(veggie_form_anova_result)
 #|echo: false
 #|fig-cap: "average retail price by fruit form."
 #|warning: false
-#|include: true
+#|results: asis
 
 # plotting average retail price by fruit form
 fruit_summary |> 
@@ -389,6 +390,7 @@ fruit_summary |>
 #|fig-cap: "average retail price by fruit form."
 #|warning: false
 #|include: true
+#|results: asis
 
 
 # plotting average retail price by veggie form
