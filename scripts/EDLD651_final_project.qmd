@@ -17,7 +17,7 @@ execute:
   echo: true
   warnings: false
   message: false
-  eval: false
+  eval: true
 fig-width: 10
 fig-height: 8
 ---
@@ -41,6 +41,9 @@ For this project, the Fruit and Vegetable Prices data from the USDA Economic Res
 To begin our analysis, we started by compiling and cleaning the raw data provided by the USDA Economic Research Service. To this end, we used the following packages: @here2025, @janitor2024, @rio2023, @tidyverse, @knitr2025, @dplyr2023, @tm2025, @R2025.
 
 ```{r}
+#| include: false
+#| message: false
+
 # Load Packages
 library(here)
 library(janitor)
@@ -49,11 +52,20 @@ library(tidyverse)
 library(tm)
 library(dplyr)
 library(knitr)
+
 ```
+
+\
+\
 
 First, we imported the data using the list.files argument and rbinded our files to make a fruit and a vegetable data frame.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
 # Import Data
 
 # Fruit data
@@ -73,6 +85,13 @@ veg_2020 <- do.call(rbind, lapply
 Once all of the data was imported, we had to clean and tidy the data frames as they were incredibly messy. In this step, we removed rows without data, renamed columns, and extracted irrelevant information such as citations and instructions. Code to complete this action can be found below.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
+
 # Removing rows without data
 
 # Fruit cleaning
@@ -147,6 +166,12 @@ veg_2020_clean <- veg_2020_clean |>
 For our research questions, some specific data formatting and tidying was necessary. For research question one, how the price of fruits and vegetables varies based on form, we needed to alter the form category to better allow for analysis. For example, tomatoes were listed as "Grape", "Roma", and "Large" rather than just fresh. We simple converted the information to say "Fresh" so it was in alignment with other vegetables in the data frame.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 # How does the price of fruits and vegetables vary based on form? (Kyla)
 
 # remove the numbers at the end of the forms
@@ -204,6 +229,12 @@ veg_summary <- veg_2020_clean |>
 Our second research question required the most synthesis as it pertained to information not originally provided in the data set. To supplement, we did research on what families each fruit and vegetable in the data set belonged to. Using this information, we grouped fruits into seven families: stone fruit, berries, pomes, citrus, melons, mixed fruits, and synconiums (@USDA). Vegetables were grouped into 13 families (@VegCitation; @VegCitation2), with one of the families being foods that are culinarily vegetables, but botanically classed as fruits. These were kept with the fruits as the culinary classification was more appropriate for our questions.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 # Do fruit and vegetable prices vary by family (berries, stone fruit etc)? (Erika)
 
 #making a new column for the fruit groups -- I can add where I found this info in our introduction :P
@@ -277,6 +308,12 @@ veg_family_data <- veg_family_data %>%
 Finally, for research question three minimal alterations were made to the data frame for analysis. A column indicating if a produce item was a fruit or a vegetable was added to assist in grouping for analysis.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 # CHEYNA
 # examine the relationship between yield and price
 fruit_2020_clean <- fruit_2020_clean %>% 
@@ -332,12 +369,10 @@ price_by_form_long <- price_by_form_wide |>
 ```
 
 ```{r}
-#| label: tbl-2
-#| tbl-cap: "Mean Retail Prices of Fruits and Vegetables by Family"
 #| echo: false
 #| warning: false
 #| message: false
-#| results: asis
+#| include: false
 
 price_by_family_summary_df <- fruit_family_data |>
   mutate(cup_eq_price = as.numeric(cup_eq_price)) |>
@@ -347,6 +382,16 @@ price_by_family_summary_df <- fruit_family_data |>
   select(name, family, retail_price) |>
   group_by(family) |>
   summarise(mean_price = mean(retail_price, na.rm = TRUE))
+```
+
+```{r}
+#| label: tbl-2
+#| tbl-cap: "Mean Retail Prices of Fruits and Vegetables by Family"
+#| echo: false
+#| warning: false
+#| message: false
+#| results: asis
+
 
 knitr::kable(
   price_by_family_summary_df,
@@ -357,6 +402,12 @@ knitr::kable(
 ```
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 # ANOVAs to look at how retail price varies by fruit and veggie form
 fruit_form_anova_result <- aov(retail_price ~ form, data = fruit_2020_clean)
 summary(fruit_form_anova_result)
@@ -367,10 +418,10 @@ veggie_form_anova_result <- aov(retail_price ~ form, data = veg_2020_clean)
 summary(veggie_form_anova_result)
 ```
 
-```{r figure-1}
-#|label: figure-1
-#|echo: false
+```{r}
+#|label: fig-1
 #|fig-cap: "average retail price by fruit form."
+#|echo: false
 #|warning: false
 #|results: asis
 
@@ -388,10 +439,11 @@ fruit_summary |>
         axis.text.x = element_text(angle = 45, hjust = 1),
         panel.background = element_blank(),  
         plot.background = element_blank())
+
 ```
 
 ```{r figure-2}
-#|label: figure-2
+#|label: fig-2
 #|echo: false
 #|fig-cap: "average retail price by fruit form."
 #|warning: false
@@ -417,46 +469,14 @@ veg_form_plot <- veg_summary |>
 veg_form_plot
 ```
 
-Figure 1 shows that the retail price of fruits varied significantly by form, (F(6) = 12.59, p \< .001). In running a post-hoc test, dried fruits were priced significantly higher than all other forms. However, there were no other differences between forms (Figure 2). The retail price of vegetables did NOT vary significantly by form (F(3) = 1.424, p = .243).
+Figure 1 shows that the retail price of fruits varied significantly by form, (F(6) = 12.59, p \< .001). In running a post-hoc test, dried fruits were priced significantly higher than all other forms. However, there were no other differences between forms. The retail price of vegetables did NOT vary significantly by form (F(3) = 1.424, p = .243).
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
 
-str(fruit_family_data$cup_eq_price)
-fruit_family_data <- fruit_family_data %>% 
-  mutate(cup_eq_price = as.numeric(cup_eq_price))
-
-fruit_family_data %>%
-  group_by(family) %>%
-  summarize(
-    mean_price = mean(cup_eq_price, na.rm = TRUE),
-    median_price = median(cup_eq_price, na.rm = TRUE),
-    sd_price = sd(cup_eq_price, na.rm = TRUE),
-    n = n()
-  )
-
-# running a one way anova to see if price (continuous) varies by family (categorical). I found that it does not vary signifiantly (p = .158)
-anova_result <- aov(cup_eq_price ~ family, data = fruit_family_data)
-summary(anova_result)
-
-#plot
-plot_table1 <- fruit_family_data %>%
-  group_by(family) %>%
-  summarize(
-    mean_price = mean(cup_eq_price, na.rm = TRUE),
-    sd_price = sd(cup_eq_price, na.rm = TRUE),
-    n = n(),
-    se_price = sd_price / sqrt(n)
-  )
-
-family_plot_fruit <- ggplot(plot_table1, aes(x = reorder(family, mean_price), y = mean_price)) +
-  geom_col(fill = "deeppink4") +
-  geom_errorbar(aes(ymin = mean_price - se_price, ymax = mean_price + se_price), width = 0.3) +
-  labs(x = "Fruit Family", y = "Mean Price per Unit", title = "Mean Fruit Prices by Family") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-family_plot_fruit
-# same thing but for vegetables 
 
 anova_result2 <- aov(cup_eq_price ~ family, data = veg_family_data)
 summary(anova_result2) # this one DID have a significant difference (p < 0.001) so i did post-hoc to see what's going on. 
@@ -477,6 +497,17 @@ summary_table <- veg_family_data %>%
     se_price = sd_price / sqrt(n)
   )
 
+
+```
+
+```{r}
+#|label: fig-3
+#|fig-cap: "average retail price by veggie family"
+#|echo: false
+#|warning: false
+#|include: true
+#|results: asis
+
 family_plot_veg <- ggplot(summary_table, aes(x = reorder(family, mean_price), y = mean_price)) +
   geom_col(fill = "olivedrab4") +
   geom_errorbar(aes(ymin = mean_price - se_price, ymax = mean_price + se_price), width = 0.3) +
@@ -487,9 +518,70 @@ family_plot_veg <- ggplot(summary_table, aes(x = reorder(family, mean_price), y 
 family_plot_veg
 ```
 
-Figure 3 shows that vegetables did vary significantly by family, F(12) = 4.786, p \< .001. In running a post-hoc test, the Liliceae family (e.g. onions & asparagus) were priced significantly higher than all other families. There were no other differences between families (Figure 4). Fruits did not vary significantly by family, F(6) = 1.623, p = .158.
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+#str(fruit_family_data$cup_eq_price)
+fruit_family_data <- fruit_family_data %>% 
+  mutate(cup_eq_price = as.numeric(cup_eq_price))
+
+fruit_family_data %>%
+  group_by(family) %>%
+  summarize(
+    mean_price = mean(cup_eq_price, na.rm = TRUE),
+    median_price = median(cup_eq_price, na.rm = TRUE),
+    sd_price = sd(cup_eq_price, na.rm = TRUE),
+    n = n()
+  )
+
+# running a one way anova to see if price (continuous) varies by family (categorical). I found that it does not vary signifiantly (p = .158)
+anova_result <- aov(cup_eq_price ~ family, data = fruit_family_data)
+summary(anova_result)
+```
 
 ```{r}
+#|label: fig-4
+#|echo: false
+#|fig-cap: "average retail price by fruit family"
+#|warning: false
+#|include: true
+#|results: asis
+
+
+#plot
+plot_table1 <- fruit_family_data %>%
+  group_by(family) %>%
+  summarize(
+    mean_price = mean(cup_eq_price, na.rm = TRUE),
+    sd_price = sd(cup_eq_price, na.rm = TRUE),
+    n = n(),
+    se_price = sd_price / sqrt(n)
+  )
+
+family_plot_fruit <- ggplot(plot_table1, aes(x = reorder(family, mean_price), y = mean_price)) +
+  geom_col(fill = "deeppink4") +
+  geom_errorbar(aes(ymin = mean_price - se_price, ymax = mean_price + se_price), width = 0.3) +
+  labs(x = "Fruit Family", y = "Mean Price per Unit", title = "Mean Fruit Prices by Family") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+family_plot_fruit
+
+```
+
+Figure 3 shows that vegetables did vary significantly by family, F(12) = 4.786, p \< .001. In running a post-hoc test, the Liliceae family (e.g. onions & asparagus) were priced significantly higher than all other families. There were no other differences between families. Fruits did not vary significantly by family, F(6) = 1.623, p = .158.
+
+```{r}
+#|label: fig-5
+#|echo: false
+#|fig-cap: "relationship between yield and price of fruits and veggies"
+#|warning: false
+#|include: true
+#|results: asis
+
 # CHEYNA 
 # plot fruit and veg diff. 
 fruit_veg_df <- fruit_veg_df %>% 
@@ -508,6 +600,13 @@ sorted_yield_price_plot <- fruit_veg_df %>%
        color = "Type")
 
 sorted_yield_price_plot
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
 
 # analysis 
 sorted_yield_price_anova <- aov(retail_price ~ yield + fruit_veg, data = fruit_veg_df)
